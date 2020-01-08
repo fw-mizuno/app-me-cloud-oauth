@@ -1,0 +1,177 @@
+openapi: 3.0.0
+info:
+  title: app-me-cloud-oauth
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /oauth2/authorize:
+    post:
+      summary: 認可リクエスト
+      operationId: post-authorize
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  temporary_token:
+                    type: string
+                    description: ワンタイムトークン。有効期限は10分
+                  scope_description:
+                    type: string
+                    description: どのデータのアクセスのアクセス許可を得るのかユーザーに表示するための文字列。認可APIのscopeパラメータより判別
+                required:
+                  - temporary_token
+                  - scope_description
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response_type:
+                  type: string
+                  description: '"code" 固定値。将来的に別レスポンスも想定'
+                scope:
+                  type: string
+                  description: |-
+                    付与する権限。URLエンコードされた空白文字（%20）で区切って、複数のスコープを指定できるようにする
+                    まずは"read_property"と"read_user"の2つを公開
+                state:
+                  type: string
+                  description: CSRF対策。クライアント側で生成した任意の文字列
+                redirect_uri:
+                  type: string
+                  description: |-
+                    コールバックURL
+                    事前にclientごとにコールバックURLは登録しておく。一致しなければエラー
+                client_id:
+                  type: string
+                  description: 事前発行するID。連携先を判別する
+                email:
+                  type: string
+                  description: ログインメールアドレス
+                password:
+                  type: string
+                  description: ログインパスワード
+              required:
+                - response_type
+                - scope
+                - state
+                - redirect_uri
+                - client_id
+                - password
+                - email
+      description: |
+        認可リクエストAPI
+        入力されたemail, passwordの照合と連携情報を受取る。
+      tags:
+        - OAuth
+    parameters: []
+  /oauth2/access_permission:
+    post:
+      summary: データアクセス許可確認
+      tags:
+        - OAuth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect_uri:
+                    type: string
+                    description: |-
+                      リダイレクトURLを返却。
+                      リダイレクトURLに付与するクエリパラメータ
+
+                      {redirect_uri}?code={生成したgrant}&state={認可APIで受け取った値をそのまま返却}
+
+                      詳しくは公開APIのドキュメントに記載する
+                required:
+                  - redirect_uri
+      operationId: post-access_permission
+      description: |-
+        ユーザーにデータアクセスの同意を得て、grantを要求
+        レスポンスにコールバックURLを返却。クライアント側でリダイレクト処理する
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                temporary_id:
+                  type: string
+                  description: 認可APIで受け取った仮token
+              required:
+                - temporary_id
+    parameters: []
+  /oauth2/token:
+    post:
+      summary: アクセストークン発行
+      tags:
+        - OAuth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: アクセストークン
+                  expires_in:
+                    type: string
+                    description: tokenの有効期限
+                  id_token:
+                    type: string
+                    description: |-
+                      ユーザーの情報はjwtトークンに含めて返却
+                      (名前、メールアドレス)
+                required:
+                  - access_token
+                  - expires_in
+                  - id_token
+        '':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      operationId: post-token
+      description: アクセストークンを発行する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  description: '現状は"authorization_code"のみ。将来的に"client_credentials"もサポートするため'
+                code:
+                  type: string
+                  description: 認可コード
+                client_id:
+                  type: string
+                  description: 事前発行する連携先ごとのID
+                client_secret:
+                  type: string
+                  description: 事前発行する連携先ごとのシークレット
+              required:
+                - grant_type
+                - code
+                - client_id
+                - client_secret
+    parameters: []
+components:
+  schemas: {}
