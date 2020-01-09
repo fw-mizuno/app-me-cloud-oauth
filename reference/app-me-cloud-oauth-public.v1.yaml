@@ -1,0 +1,114 @@
+openapi: 3.0.0
+info:
+  title: app-me-cloud-oauth-public
+  version: '1.0'
+  description: app-me-cloud OAuth 公開API
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /oauth2/v1/authorize:
+    get:
+      summary: 認可リクエスト
+      tags: []
+      responses: {}
+      operationId: get-oauth2-authorize-v1
+      description: 認可リクエストを行う。app-me-cloudのログイン画面が表示され、認証が完了するとコールバックURLにcodeを付与してリダイレクトする。
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: response_type
+          required: true
+          description: '"code" 固定値。将来的に別レスポンスも想定'
+        - schema:
+            type: string
+          in: query
+          name: scope
+          required: true
+          description: |-
+            付与する権限。URLエンコードされた空白文字（%20）で区切って、複数のスコープを指定できるようにする
+                                まずは"read_property"と"read_user"の2つを公開
+        - schema:
+            type: string
+          in: query
+          name: state
+          required: true
+          description: CSRF対策。クライアント側で生成した任意の文字列
+        - schema:
+            type: string
+          in: query
+          name: redirect_uri
+          required: true
+          description: |-
+            コールバックURL
+                                事前にclientごとにコールバックURLは登録しておく。一致しなければエラー
+        - schema:
+            type: string
+          in: query
+          name: client_id
+          required: true
+          description: 事前発行するID。連携先を判別する
+    parameters: []
+  /oauth2/v1/token:
+    post:
+      summary: アクセストークン発行
+      tags:
+        - OAuth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: アクセストークン
+                  expires_in:
+                    type: string
+                    description: tokenの有効期限
+                  id_token:
+                    type: string
+                    description: |-
+                      ユーザーの情報はjwtトークンに含めて返却
+                      (名前、メールアドレス)
+                required:
+                  - access_token
+                  - expires_in
+                  - id_token
+        '':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: {}
+      operationId: post-token
+      description: アクセストークンを発行する。
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  description: '現状は"authorization_code"のみ。将来的に"client_credentials"もサポートするため'
+                code:
+                  type: string
+                  description: 認可コード
+                client_id:
+                  type: string
+                  description: 事前発行する連携先ごとのID
+                client_secret:
+                  type: string
+                  description: 事前発行する連携先ごとのシークレット
+              required:
+                - grant_type
+                - code
+                - client_id
+                - client_secret
+    parameters: []
+components:
+  schemas: {}

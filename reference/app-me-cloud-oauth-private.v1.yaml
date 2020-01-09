@@ -1,7 +1,8 @@
 openapi: 3.0.0
 info:
-  title: app-me-cloud-oauth
+  title: app-me-cloud-oauth-private
   version: '1.0'
+  description: app-me-cloud OAuth関連API
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -112,11 +113,10 @@ paths:
               required:
                 - temporary_id
     parameters: []
-  /oauth2/token:
-    post:
-      summary: アクセストークン発行
-      tags:
-        - OAuth
+  /oauth2/client:
+    get:
+      summary: 認可サービス情報取得
+      tags: []
       responses:
         '200':
           description: OK
@@ -125,53 +125,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  access_token:
+                  client_id:
                     type: string
-                    description: アクセストークン
-                  expires_in:
+                    description: 連携先ID
+                  client_name:
                     type: string
-                    description: tokenの有効期限
-                  id_token:
+                    description: 連携先名
+                  client_icon_image:
                     type: string
-                    description: |-
-                      ユーザーの情報はjwtトークンに含めて返却
-                      (名前、メールアドレス)
+                    description: 連携先サービスアイコン画像URL
                 required:
-                  - access_token
-                  - expires_in
-                  - id_token
-        '':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties: {}
-      operationId: post-token
-      description: アクセストークンを発行する。
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                grant_type:
-                  type: string
-                  description: '現状は"authorization_code"のみ。将来的に"client_credentials"もサポートするため'
-                code:
-                  type: string
-                  description: 認可コード
-                client_id:
-                  type: string
-                  description: 事前発行する連携先ごとのID
-                client_secret:
-                  type: string
-                  description: 事前発行する連携先ごとのシークレット
-              required:
-                - grant_type
-                - code
-                - client_id
-                - client_secret
-    parameters: []
+                  - client_id
+                  - client_name
+      operationId: get-oauth2-client
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: client_id
+          description: 連携先ID
+          required: true
+      description: 連携サービスの情報を取得する
 components:
   schemas: {}
