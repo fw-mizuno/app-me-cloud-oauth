@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: app-me-cloud-oauth-private
+  title: app-me-cloud OAuth Private API
   version: '1.0'
-  description: app-me-cloud OAuth関連API
+  description: app-me-cloud OAuth 関連API
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -116,7 +116,8 @@ paths:
   /oauth2/client:
     get:
       summary: 認可サービス情報取得
-      tags: []
+      tags:
+        - OAuth
       responses:
         '200':
           description: OK
