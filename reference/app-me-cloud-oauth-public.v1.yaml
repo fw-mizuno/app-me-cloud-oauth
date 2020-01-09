@@ -14,6 +14,12 @@ paths:
       responses:
         '200':
           description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error.v1.yaml
       operationId: get-oauth2-authorize-v1
       description: 認可リクエストを行う。app-me-cloudのログイン画面が表示され、認証が完了するとコールバックURLにcodeを付与してリダイレクトする。
       parameters:
@@ -78,6 +84,12 @@ paths:
                   - access_token
                   - expires_in
                   - id_token
+        '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: ../models/error.v1.yaml
       operationId: post-token
       description: アクセストークンを発行する。
       requestBody:

@@ -27,6 +27,12 @@ paths:
                 required:
                   - temporary_token
                   - scope_description
+        '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: ../models/error.v1.yaml
       requestBody:
         content:
           application/json:
@@ -105,6 +111,12 @@ paths:
                   - redirect_uri
                   - client_icon_image
                   - client_name
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error.v1.yaml
       operationId: post-access_permission
       description: |-
         ユーザーにデータアクセスの同意を得て、grantを要求
@@ -147,6 +159,12 @@ paths:
                 required:
                   - client_id
                   - client_name
+        '400':
+            description: Bad Request
+            content:
+              application/json:
+                schema:
+                  $ref: ../models/error.v1.yaml
       operationId: get-oauth2-client
       parameters:
         - schema:
