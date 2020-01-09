@@ -93,9 +93,18 @@ paths:
 
                       {redirect_uri}?code={生成したgrant}&state={認可APIで受け取った値をそのまま返却}
 
-                      詳しくは公開APIのドキュメントに記載する
+                      詳しくは公開APIのドキュメント
+                      に記載する
+                  client_icon_image:
+                    type: string
+                    description: 連携先サービスアイコン画像URL
+                  client_name:
+                    type: string
+                    description: 連携先名
                 required:
                   - redirect_uri
+                  - client_icon_image
+                  - client_name
       operationId: post-access_permission
       description: |-
         ユーザーにデータアクセスの同意を得て、grantを要求

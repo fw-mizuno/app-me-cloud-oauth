@@ -11,7 +11,9 @@ paths:
       summary: 認可リクエスト
       tags:
         - authorize
-      responses: {}
+      responses:
+        '200':
+          description: OK
       operationId: get-oauth2-authorize-v1
       description: 認可リクエストを行う。app-me-cloudのログイン画面が表示され、認証が完了するとコールバックURLにcodeを付与してリダイレクトする。
       parameters:
@@ -76,13 +78,6 @@ paths:
                   - access_token
                   - expires_in
                   - id_token
-        '':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: object
-                properties: {}
       operationId: post-token
       description: アクセストークンを発行する。
       requestBody:
