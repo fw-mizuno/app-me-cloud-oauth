@@ -28,11 +28,11 @@ paths:
                   - temporary_token
                   - scope_description
         '400':
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: ../models/error.v1.yaml
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error.v1.yaml
       requestBody:
         content:
           application/json:
@@ -147,24 +147,35 @@ paths:
               schema:
                 type: object
                 properties:
-                  client_id:
-                    type: string
-                    description: 連携先ID
                   client_name:
                     type: string
                     description: 連携先名
                   client_icon_image:
                     type: string
                     description: 連携先サービスアイコン画像URL
+                  scopes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          description: scope名
+                        description:
+                          type: string
+                          description: 説明
+                      required:
+                        - name
+                        - description
                 required:
-                  - client_id
                   - client_name
+                  - scopes
         '400':
-            description: Bad Request
-            content:
-              application/json:
-                schema:
-                  $ref: ../models/error.v1.yaml
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: ../models/error.v1.yaml
       operationId: get-oauth2-client
       parameters:
         - schema:
